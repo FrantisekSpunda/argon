@@ -5,16 +5,12 @@ import uuid
 
 class Order(models.Model):
     order_id = models.CharField(blank=True, max_length=8)
-    supplier = models.CharField(max_length=128, null=True, blank=True)
-    supplier_address = models.CharField(max_length=128)
+    supplier = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True)
     subscriber = models.CharField(max_length=128, null=True, blank=True)
-    subscriber_address = models.CharField(max_length=128)
     total_price = models.FloatField(default=0, null=True, blank=True)
 
     account_number = models.CharField(max_length=128, blank=True)
     variable_symbol = models.CharField(max_length=128, blank=True)
-
-    profile = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True)
 
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
@@ -36,7 +32,6 @@ class Item(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
     price = models.FloatField(default=0, blank=True)
     dph = models.FloatField(default=21, blank=True)
-    
     
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)

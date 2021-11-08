@@ -5,4 +5,7 @@ def frontpage(request):
     return redirect('dashboard')
 
 def dashboard(request):
-    return render(request, 'orders/dashboard.html')
+    profile = request.user.profile
+
+    context = {'profile': profile}
+    return render(request, 'orders/dashboard.html', context)
