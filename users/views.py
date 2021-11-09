@@ -17,6 +17,7 @@ def editProfile(request):
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Profile was succesfully edited!')
 
     context = {'profile': profile, 'form': form}
     return render(request, 'users/profile.html', context)
