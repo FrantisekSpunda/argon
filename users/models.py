@@ -15,7 +15,7 @@ class Profile(models.Model):
     country = models.CharField(max_length=128, blank=True, null=True)
     postal_code = models.CharField(max_length=5, blank=True, null=True)
     
-    about_me = models.CharField(max_length=256, blank=True, null=True)
+    about_me = models.TextField(max_length=256, blank=True, null=True)
     profile_image = models.ImageField(null=True, blank=True, upload_to='profiles/', default='profiles/user-default.png')
 
     created = models.DateTimeField(auto_now_add=True)
