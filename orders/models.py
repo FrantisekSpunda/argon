@@ -18,7 +18,7 @@ class Invoice(models.Model):
     subscriber_country = models.CharField(max_length=128, blank=True, null=True)
     subscriber_postal_code = models.CharField(max_length=5, blank=True, null=True)
 
-    date_expiration = models.DateField(default=datetime.now())
+    date_exposure = models.DateField(default=datetime.now())
     date_maturity = models.DateField(default=datetime.now()+timedelta(days=30))
 
     total_price = models.FloatField(default=0, null=True, blank=True)
@@ -44,13 +44,14 @@ class Invoice(models.Model):
         self.save()
 
 class Item(models.Model):
-    invoice_id = models.ForeignKey(Invoice, on_delete=models.CASCADE, null=True)
+    invoice_id = models.ForeignKey(Invoice, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=128, blank=True, null=True)
     price = models.FloatField(default=0, blank=True)
+    amouth = models.IntegerField(default=1, blank=True)
     dph = models.FloatField(default=21, blank=True)
     
     created = models.DateTimeField(auto_now_add=True)
-    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    item_id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
     def __str__(self):
         return self.name

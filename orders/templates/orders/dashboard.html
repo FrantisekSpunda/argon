@@ -25,7 +25,7 @@
                 <div class="row">
                     <div class="col">
                     <h5 class="card-title text-uppercase text-muted mb-0">Invoices this month</h5>
-                    <span class="h2 font-weight-bold mb-0">350,897</span>
+                    <span class="h2 font-weight-bold mb-0">{{ invoices.count }}</span>
                     </div>
                     <div class="col-auto">
                     <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
@@ -68,7 +68,7 @@
                 <div class="card-body">
                 <div class="row">
                     <div class="col">
-                    <h5 class="card-title text-uppercase text-muted mb-0">Profit</h5>
+                    <h5 class="card-title text-uppercase text-muted mb-0">Profit this month</h5>
                     <span class="h2 font-weight-bold mb-0">924 000</span>
                     </div>
                     <div class="col-auto">
@@ -91,7 +91,7 @@
                 <div class="row">
                     <div class="col">
                     <h5 class="card-title text-uppercase text-muted mb-0">total invoices</h5>
-                    <span class="h2 font-weight-bold mb-0">9000</span>
+                    <span class="h2 font-weight-bold mb-0">{{ invoices.count }}</span>
                     </div>
                     <div class="col-auto">
                     <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
@@ -188,7 +188,7 @@
                     <th scope="col">Invoice</th>
                     <th scope="col">Subscriber</th>
                     <th scope="col">Total price</th>
-                    <th scope="col">Date Expiration</th>
+                    <th scope="col">Date Maturity</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -196,7 +196,7 @@
                 {% for invoice in invoices %}
                 <tr>
                     <th scope="row">
-                    {{ invoice.invoice_id }}
+                    <a href="{% url 'invoice' invoice.id %}">{{ invoice.invoice_id }}</a>
                     </th>
                     <td>
                     {{ invoice.subscriber_name }}
@@ -205,7 +205,7 @@
                     {{ invoice.total_price }}
                     </td>
                     <td>
-                    {{ invoice.date_expiration }}
+                    {{ invoice.date_maturity }}
                     </td>
                 </tr>
                 {% endfor %}
