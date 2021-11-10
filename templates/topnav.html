@@ -38,10 +38,10 @@
                 <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="media align-items-center">
                         <span class="avatar avatar-sm rounded-circle">
-                            <img alt="Image placeholder" src="{{ profile.profile_image.url }}">
+                            <img alt="Image placeholder" src="{{ request.user.profile.profile_image.url }}">
                         </span>
                         <div class="media-body  ml-2  d-none d-lg-block">
-                            <span class="mb-0 text-sm  font-weight-bold">{{ profile.first_name }} {{ profile.last_name }}</span>
+                            <span class="mb-0 text-sm  font-weight-bold">{{ request.user.profile.first_name }} {{ request.user.profile.last_name }}</span>
                         </div>
                     </div>
                 </a>
