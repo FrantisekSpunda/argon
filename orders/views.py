@@ -33,18 +33,24 @@ def newInvoice(request):
     form_item = ItemForm()
 
     if request.method == 'POST':
-        form = InvoiceForm(request.POST)
-        form_item = ItemForm(request.POST)
-        if form.is_valid() and form_item.is_valid():
-            invoice = form.save(commit=False)
+        invoice = InvoiceForm(request.POST)
+        item = ItemForm()
+        
+        if invoice.is_valid():
+            invoice = invoice.save(commit=False)
             invoice.invoice_id = f'{current_date}{"{:0>4}".format(invoices.count()+1)}'
             invoice.supplier = request.user.profile
             invoice.save()
 
-            item = form_item.save(commit=False)
-
-            item.invoice_id = invoice.invoice_id
-            item.save()
+            for index in range(len(request.POST.getlist('name'))) :
+                item = ItemForm()
+                item = item.save(commit=False)
+                item.invoice_id = invoice
+                item.name = request.POST.getlist('name')[index]
+                item.price = request.POST.getlist('price')[index]
+                item.amouth = request.POST.getlist('amouth')[index]
+                item.dph = request.POST.getlist('dph')[index]
+                item.save()
 
             messages.success(request, 'Invoice was succesfully created and sended.')
             return redirect('dashboard')
