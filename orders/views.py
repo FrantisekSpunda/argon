@@ -16,7 +16,7 @@ def frontpage(request):
 def dashboard(request):
     profile = request.user.profile
 
-    invoices = profile.invoice_set.all()
+    invoices = profile.invoice_set.all()[:5]
 
     context = {'profile': profile, 'invoices': invoices}
     return render(request, 'orders/dashboard.html', context)
@@ -100,3 +100,11 @@ def invoice(request, pk):
     print(items)
     context = {'invoice': invoice, 'items': items}
     return render(request, 'orders/invoice-form.html', context)
+
+@login_required(login_url='login')
+def invoices(request):
+    profile = request.user.profile
+    invoices = profile.invoice_set.all()
+
+    context = {'invoices': invoices}
+    return render(request, 'orders/invoices.html', context)

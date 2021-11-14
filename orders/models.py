@@ -34,6 +34,9 @@ class Invoice(models.Model):
     def __str__(self):
         return self.invoice_id
 
+    class Meta:
+        ordering = ['-invoice_id']
+
     @property
     def getTotalPrice(self):
         items = self.item_set.all()
