@@ -1,9 +1,13 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
+from argon.utils import paginateBlocks
 from .models import Invoice
 from .forms import InvoiceForm, ItemForm
-from datetime import date
+from datetime import date, timedelta
+from .utils import searchInvoices
+from argon.utils import paginateBlocks
 
 
 # DASHBOARD ######################
@@ -16,9 +20,20 @@ def frontpage(request):
 def dashboard(request):
     profile = request.user.profile
 
-    invoices = profile.invoice_set.all()[:5]
+    enddate = date.today()
+    startdate = enddate - timedelta(days=30)
+    date__range=[startdate, enddate]
 
-    context = {'profile': profile, 'invoices': invoices}
+    last_5_invoices = profile.invoice_set.all()[:5]
+    last_month_invoices = profile.invoice_set.filter(date_exposure__range=date__range)
+    invoices = profile.invoice_set.all()
+
+    profit_this_month = 0
+    for invoice in last_month_invoices :
+        profit_this_month += invoice.total_price
+        
+
+    context = {'profile': profile, 'invoices': invoices, 'last_5_invoices': last_5_invoices, 'last_month_invoices': last_month_invoices, 'profit_this_month': profit_this_month}
     return render(request, 'orders/dashboard.html', context)
 
 
@@ -101,10 +116,13 @@ def invoice(request, pk):
     context = {'invoice': invoice, 'items': items}
     return render(request, 'orders/invoice-form.html', context)
 
+
 @login_required(login_url='login')
 def invoices(request):
     profile = request.user.profile
-    invoices = profile.invoice_set.all()
+    invoices, search_query = searchInvoices(request)
 
-    context = {'invoices': invoices}
+    custom_range, invoices = paginateBlocks(request, invoices, 11)
+
+    context = {'invoices': invoices, 'search_query': search_query, 'custom_range': custom_range}
     return render(request, 'orders/invoices.html', context)

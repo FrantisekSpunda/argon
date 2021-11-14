@@ -32,46 +32,47 @@
                 </div>
                 </div>
                 <div class="table-responsive">
-                <!-- Projects table -->
-                <table class="table align-items-center table-flush">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Invoice</th>
-                        <th scope="col">Subscriber</th>
-                        <th scope="col">Total price</th>
-                        <th scope="col">Date Maturity</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                    <!-- Invoices table -->
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Invoice</th>
+                            <th scope="col">Subscriber</th>
+                            <th scope="col">Total price</th>
+                            <th scope="col">Date Maturity</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                    {% for invoice in invoices %}
-                    <tr>
-                        <th scope="row">
-                        <a href="{% url 'invoice' invoice.id %}">{{ invoice.invoice_id }}</a>
-                        </th>
-                        <td>
-                        {{ invoice.subscriber_name }}
-                        </td>
-                        <td>
-                        {{ invoice.total_price }}
-                        </td>
-                        <td>
-                        {{ invoice.date_maturity }}
-                        </td>
-                    </tr>
-                    {% endfor %}
+                        {% for invoice in invoices %}
+                        <tr>
+                            <th scope="row">
+                            <a href="{% url 'invoice' invoice.id %}">{{ invoice.invoice_id }}</a>
+                            </th>
+                            <td>
+                            {{ invoice.subscriber_name }}
+                            </td>
+                            <td>
+                            {{ invoice.total_price }} $
+                            </td>
+                            <td>
+                            {{ invoice.date_maturity }}
+                            </td>
+                        </tr>
+                        {% endfor %}
 
-                    {% if not invoices %}
-                    <tr>
-                        <td colspan="4" style="text-align: center"><i class="fas fa-space-shuttle text-error mr-3"></i> nothing to show...</td>
-                    </tr>
-                    {% endif %}
+                        {% if not invoices %}
+                        <tr>
+                            <td colspan="4" style="text-align: center"><i class="fas fa-space-shuttle text-error mr-3"></i> nothing to show...</td>
+                        </tr>
+                        {% endif %}
 
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            {% include 'pagination.html' with query_set=invoices custom_range=custom_range %}
         </div>
     </div>
     <!-- Footer -->
