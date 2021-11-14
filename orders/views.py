@@ -26,56 +26,77 @@ def dashboard(request):
 ##################################
 @login_required(login_url='login')
 def newInvoice(request):
+    # Get number of invoice
     invoices = request.user.profile.invoice_set.all()
-    form = InvoiceForm()
     current_date = date.today().strftime("%y%m")
+    invoice_id = f'{current_date}{"{:0>4}".format(invoices.count()+1)}'
 
-    form_item = ItemForm()
+    # Get form of invoice and item
+    invoice = InvoiceForm()
+    item = ItemForm()
 
     if request.method == 'POST':
         invoice = InvoiceForm(request.POST)
-        item = ItemForm()
         
         if invoice.is_valid():
             invoice = invoice.save(commit=False)
-            invoice.invoice_id = f'{current_date}{"{:0>4}".format(invoices.count()+1)}'
+            invoice.invoice_id = invoice_id
             invoice.supplier = request.user.profile
             invoice.save()
 
             for index in range(len(request.POST.getlist('name'))) :
                 item = ItemForm()
                 item = item.save(commit=False)
-                item.invoice_id = invoice
+                item.invoice = invoice
                 item.name = request.POST.getlist('name')[index]
                 item.price = request.POST.getlist('price')[index]
                 item.amouth = request.POST.getlist('amouth')[index]
                 item.dph = request.POST.getlist('dph')[index]
                 item.save()
 
+            invoice.getTotalPrice
             messages.success(request, 'Invoice was succesfully created and sended.')
             return redirect('dashboard')
+        else:
+            messages.error(request, 'Wrong data in form!')
 
-        messages.error(request, 'Wrong data in form!')
-
-    context = {'form': form, 'form_item': form_item}
+    context = {'invoice': invoice, 'item': item}
     return render(request, 'orders/invoice-form.html', context)
 
 @login_required(login_url='login')
 def invoice(request, pk):
-    invoice = request.user.profile.invoice_set.get(id=pk)
-    invoice_id = invoice.invoice_id
-    form = InvoiceForm(instance=invoice)
+    curr_invoice = request.user.profile.invoice_set.get(id=pk)
+    invoice_id = curr_invoice.invoice_id
+    invoice = InvoiceForm(instance=curr_invoice)
+
+    curr_items = curr_invoice.item_set.all()
+    items = []
+    for curr_item in curr_items:
+        items.append(ItemForm(instance=curr_item))
+        print(curr_item)
 
     if request.method == 'POST':
-        form = InvoiceForm(request.POST, instance=invoice)
-        if form.is_valid():
-            invoice_form = form.save(commit=False)
-            invoice_form.invoice_id = invoice_id
-            invoice_form.supplier = request.user.profile
-            invoice_form.save()
+        invoice = InvoiceForm(request.POST, instance=curr_invoice)
+        if invoice.is_valid():
+            invoice = invoice.save(commit=False)
+            invoice.invoice_id = invoice_id
+            invoice.supplier = request.user.profile
+            invoice.save()
+            
+            curr_invoice.item_set.all().delete()
+            for index in range(len(request.POST.getlist('name'))) :
+                item = ItemForm()
+                item = item.save(commit=False)
+                item.invoice = invoice
+                item.name = request.POST.getlist('name')[index]
+                item.price = request.POST.getlist('price')[index]
+                item.amouth = request.POST.getlist('amouth')[index]
+                item.dph = request.POST.getlist('dph')[index]
+                item.save()
+
+            invoice.getTotalPrice
             messages.success(request, 'Invoice was succesfully updated!')
-
             return redirect('dashboard')
-
-    context = {'form': form}
+    print(items)
+    context = {'invoice': invoice, 'items': items}
     return render(request, 'orders/invoice-form.html', context)
