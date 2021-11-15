@@ -6,6 +6,7 @@ from users.models import Profile
 import uuid
 
 class Client(models.Model):
+    client_owner = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True)
     client_name = models.CharField(max_length=128, null=True, unique=True)
     client_ic = models.CharField(max_length=128, null=True)
     client_dic = models.CharField(max_length=128, null=True)

@@ -6,7 +6,7 @@ from argon.utils import paginateBlocks
 from .models import Invoice
 from .forms import InvoiceForm, ItemForm, ClientForm
 from datetime import date, timedelta
-from .utils import searchInvoices
+from .utils import searchClients, searchInvoices
 from argon.utils import paginateBlocks
 
 
@@ -79,6 +79,8 @@ def newInvoice(request):
         elif 'submit_client' in request.POST:
             client = ClientForm(request.POST)
             if client.is_valid():
+                client = client.save(commit=False)
+                client.client_owner = request.user.profile
                 client.save()
 
                 messages.success(request, 'Client was created.')
@@ -137,3 +139,16 @@ def invoices(request):
 
     context = {'invoices': invoices, 'search_query': search_query, 'custom_range': custom_range}
     return render(request, 'orders/invoices.html', context)
+
+@login_required(login_url='login')
+def clients(request):
+    # clients, search_query = searchClients(request)
+
+    # custom_range, invoices = paginateBlocks(request, clients, 11)
+
+    clients = request.user.profile.client_set.all()
+
+    print(clients)
+
+    context = {'clients': clients}
+    return render(request, 'orders/clients.html', context)

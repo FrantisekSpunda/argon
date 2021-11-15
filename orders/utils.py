@@ -11,3 +11,14 @@ def searchInvoices(request):
         Q(invoice_id__icontains=search_query)
     )
     return invoices, search_query
+
+def searchClients(request):
+    search_query = ''
+
+    if request.GET.get('search_query'):
+        search_query = request.GET.get('search_query')
+
+    clients = request.user.profile.client_set.distinct().filter(
+        Q(client_name__icontains=search_query)
+    )
+    return clients, search_query
