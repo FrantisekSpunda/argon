@@ -1,6 +1,5 @@
-from django.shortcuts import redirect, render, get_object_or_404, reverse
+from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.contrib import messages
 
 from argon.utils import paginateBlocks
@@ -10,8 +9,11 @@ from datetime import date, timedelta
 from .utils import searchClients, searchInvoices
 from argon.utils import paginateBlocks
 
-import pdfkit
-
+from django.http import FileResponse, response
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
 
 # DASHBOARD ######################
 ##################################
@@ -123,6 +125,7 @@ def invoice(request, pk):
                 item.price = request.POST.getlist('price')[index]
                 item.amouth = request.POST.getlist('amouth')[index]
                 item.dph = request.POST.getlist('dph')[index]
+                item.sended = False
                 item.save()
 
             invoice.getTotalPrice
@@ -219,3 +222,28 @@ def client(request, pk):
 
 ####################
 ### GENERATE PDF ###
+def pdfInvoice(request, pk):
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    textob = c.beginText()
+    textob.setTextOrigin(inch, inch)
+    textob.setFont('Helvetica',14)
+    
+    invoice = request.user.profile.invoice_set.get(id=pk)
+    # lines in pdf
+    lines = [
+        str(invoice.client.client_name),
+        str(invoice.total_price),
+        str(invoice.client.client_address),
+    ]
+
+    for line in lines:
+        textob.textLine(line)
+
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename='invoice_'+ invoice.invoice_id +'.pdf')

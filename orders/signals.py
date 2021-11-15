@@ -10,15 +10,17 @@ from django.conf import settings
 def sendInvoice(sender, instance, created, **kwargs):
     invoice = instance
 
-    subject = 'Invoice numb.: '+ invoice.invoice_id +' from '+ invoice.supplier.first_name +' '+ invoice.supplier.last_name
-    message = 'Sended invoice from argon web.'
+    if invoice.sended == True:
 
-    send_mail(
-        subject,
-        message,
-        settings.EMAIL_HOST_USER,
-        [invoice.client.client_email],
-        fail_silently=False,
-    )
+        subject = 'Invoice numb.: '+ invoice.invoice_id +' from '+ invoice.supplier.first_name +' '+ invoice.supplier.last_name
+        message = 'Sended invoice from argon web.'
+
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [invoice.client.client_email],
+            fail_silently=False,
+        )
 
 post_save.connect(sendInvoice, sender=Invoice)

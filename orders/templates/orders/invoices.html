@@ -40,7 +40,8 @@
                             <th scope="col">Client</th>
                             <th scope="col">Total price</th>
                             <th scope="col">Date Maturity</th>
-                            <th scope="col">Send</th>
+                            <th scope="col">Send email</th>
+                            <th scope="col">Download</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -77,6 +78,10 @@
                                     </button>
                                 </form>
                                 {% endif %}
+                            </td>
+
+                            <td>
+                                <a href="{% url 'pdf-invoice' invoice.id %}"><i class="ni ni-cloud-download-95 text-default"></i></a>
                             </td>
 
                         </tr>

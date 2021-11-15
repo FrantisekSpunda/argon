@@ -22,7 +22,7 @@
             <div class="card-header">
             <div class="row align-items-center">
                 <div class="col-8">
-                <h3 class="mb-0">New client </h3>
+                <h3 class="mb-0">{% if 'new-client' in request.path %}New client{% else %}Edit client{% endif %}</h3>
                 </div>
             </div>
             </div>

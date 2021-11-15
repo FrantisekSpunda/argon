@@ -22,7 +22,7 @@
             <div class="card-header">
             <div class="row align-items-center">
                 <div class="col-8">
-                <h3 class="mb-0">New invoice </h3>
+                <h3 class="mb-0">{% if 'new-invoice' in request.path %}New invoice{% else %}Edit invoice{% endif %}</h3>
                 </div>
             </div>
             </div>
@@ -38,6 +38,7 @@
                                 {{ invoice.client }}
                             </div>
                         </div>
+                        {% if 'new-invoice' in request.path %}
                         <div class="pl-lg-3">
                             <button type="button" class="btn btn-block btn-outline-primary" data-toggle="modal" data-target="#modal-form">
                                 <span class="btn-inner--text">New client</span>
@@ -128,6 +129,7 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
                 </div>
