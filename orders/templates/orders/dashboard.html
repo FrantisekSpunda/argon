@@ -127,7 +127,7 @@
             <!-- Chart -->
             <div class="chart">
                 <!-- Chart wrapper -->
-                <canvas id="chart-sales-dark" class="chart-canvas" data-update='{"data":{"datasets":[{"data":[0, 60, 10, 40, 15, 0, 20, 60, 80]}]}}'></canvas>
+                <canvas id="chart-sales-dark" class="chart-canvas" data-update="{% for value in last_year_invoices %}{{ value }}-{% endfor %}20"></canvas>
             </div>
             </div>
         </div>
@@ -183,7 +183,7 @@
                         <a href="{% url 'invoice' invoice.id %}">{{ invoice.invoice_id }}</a>
                         </th>
                         <td>
-                        {{ invoice.client.client_name }}
+                        <a href="{% url 'client' invoice.client.id %}">{{ invoice.client.client_name }}</a>
                         </td>
                         <td class="text-success">
                         {{ invoice.total_price|add:"0" }}$

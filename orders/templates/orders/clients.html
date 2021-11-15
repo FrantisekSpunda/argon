@@ -40,6 +40,7 @@
                             <th scope="col">Email</th>
                             <th scope="col">Address</th>
                             <th scope="col">Invoices</th>
+                            <th scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -47,7 +48,7 @@
                         {% for oneclient in clients %}
                         <tr>
                             <th scope="row">
-                            <a href="{% url 'client' oneclient.id %}">{{ oneclient.client_name }}</a>
+                            {{ oneclient.client_name }}
                             </th>
                             <td>
                             {{ oneclient.client_email }}
@@ -58,6 +59,17 @@
                             <td>
                             {{ oneclient.invoice_set.all.count }}
                             </td>
+                            <td>
+                                <div class="dropdown">
+                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a class="dropdown-item" href="{% url 'client' oneclient.id %}">Edit</a>
+                                        <a class="dropdown-item" href="{% url 'delete-client' oneclient.id %}">Delete</a>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
 
@@ -66,13 +78,11 @@
                             <td colspan="4" style="text-align: center"><i class="fas fa-space-shuttle text-error mr-3"></i> nothing to show...</td>
                         </tr>
                         {% endif %}
-
-
                         </tbody>
                     </table>
                 </div>
             </div>
-            {% comment %} {% include 'pagination.html' with query_set=clients custom_range=custom_range %} {% endcomment %}
+            {% include 'pagination.html' with query_set=clients custom_range=custom_range %}
         </div>
     </div>
     <!-- Footer -->

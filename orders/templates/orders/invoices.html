@@ -49,11 +49,15 @@
                         {% for invoice in invoices %}
                         <tr>
                             <th scope="row">
-                            <a href="{% url 'invoice' invoice.id %}">{{ invoice.invoice_id }}</a>
+                            {{ invoice.invoice_id }}
                             </th>
 
                             <td>
-                            <a href="{% url 'client' invoice.client.id %}">{{ invoice.client.client_name }}</a>
+                            {% if invoice.client %}
+                                {{ invoice.client.client_name }}
+                            {% else %}
+                                deleted
+                            {% endif %}
                             </td>
 
                             <td>
@@ -81,7 +85,17 @@
                             </td>
 
                             <td>
-                                <a href="{% url 'pdf-invoice' invoice.id %}"><i class="ni ni-cloud-download-95 text-default"></i></a>
+                                <div class="dropdown">
+                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a class="dropdown-item" href="{% url 'invoice' invoice.id %}">Edit</a>
+                                        <a class="dropdown-item" href="{% url 'client' invoice.client.id %}">Edit client</a>
+                                        <a class="dropdown-item" href="{% url 'pdf-invoice' invoice.id %}">Download PDF</a>
+                                        <a class="dropdown-item" href="{% url 'delete-invoice' invoice.id %}">Delete</a>
+                                    </div>
+                                </div>
                             </td>
 
                         </tr>

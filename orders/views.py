@@ -5,8 +5,8 @@ from django.contrib import messages
 from argon.utils import paginateBlocks
 from .models import Invoice
 from .forms import InvoiceForm, ItemForm, ClientForm
-from datetime import date, timedelta
-from .utils import searchClients, searchInvoices
+from datetime import date, timedelta, datetime
+from .utils import searchArgon
 from argon.utils import paginateBlocks
 
 from django.http import FileResponse, response
@@ -23,23 +23,35 @@ def frontpage(request):
 
 @login_required(login_url='login')
 def dashboard(request):
+    year = date.today().year
+    
     profile = request.user.profile
 
-    enddate = date.today() + timedelta(days=1)
-    startdate = enddate - timedelta(days=30)
-    date__range=[startdate, enddate]
+    invoices = profile.invoice_set.all()
 
     last_5_invoices = profile.invoice_set.all()[:5]
-    last_month_invoices = profile.invoice_set.filter(date_exposure__range=date__range)
-    invoices = profile.invoice_set.all()
-    last_month_clients = profile.client_set.filter(created__range=date__range)
 
+    last_month_invoices = profile.invoice_set.filter(date_exposure__year__gte=year,date_exposure__year__lte=year,date_exposure__month__gte=date.today().month,date_exposure__month__lte=date.today().month)
+    
+    last_month_clients = profile.client_set.filter(created__year__gte=year,created__year__lte=year,created__month__gte=date.today().month,created__month__lte=date.today().month)
+    
     profit_this_month = 0
     for invoice in last_month_invoices :
         profit_this_month += invoice.total_price
+
+    last_year_invoices = []
+    for month in range(12):
+        last_year_invoices.append(profile.invoice_set.filter(date_exposure__year__gte=year,date_exposure__year__lte=year,date_exposure__month__gte=month + 1,date_exposure__month__lte=month + 1).count())
+
+    # last_week_invoices = []
+    # for month in range(12):
+    #     last_year_invoices.append(profile.invoice_set.filter(date_exposure__year__gte=year,date_exposure__year__lte=year,date_exposure__month__gte=month + 1,date_exposure__month__lte=month + 1).count())
+
+
+
         
 
-    context = {'profile': profile, 'invoices': invoices, 'last_5_invoices': last_5_invoices, 'last_month_invoices': last_month_invoices, 'profit_this_month': profit_this_month, 'last_month_clients': last_month_clients}
+    context = {'profile': profile, 'invoices': invoices, 'last_5_invoices': last_5_invoices, 'last_month_invoices': last_month_invoices, 'profit_this_month': profit_this_month, 'last_month_clients': last_month_clients, 'last_year_invoices': last_year_invoices}
     return render(request, 'orders/dashboard.html', context)
 
 
@@ -135,6 +147,14 @@ def invoice(request, pk):
     context = {'invoice': invoice, 'items': items}
     return render(request, 'orders/invoice-form.html', context)
 
+
+@login_required(login_url='login')
+def deleteInvoice(request, pk):
+    request.user.profile.invoice_set.get(id=pk).delete()
+    messages.success(request, 'Invoice was deleted!')
+    return redirect('invoices')
+
+
 @login_required(login_url='login')
 def invoices(request):
 
@@ -143,7 +163,7 @@ def invoices(request):
         invoice.sended = True
         invoice.save()
 
-    invoices, search_query = searchInvoices(request)
+    invoices, search_query = searchArgon(request)
     custom_range, invoices = paginateBlocks(request, invoices, 11)
 
     context = {'invoices': invoices, 'search_query': search_query, 'custom_range': custom_range}
@@ -154,11 +174,10 @@ def invoices(request):
 ##### CLIENTS #####
 @login_required(login_url='login')
 def clients(request):
-    # clients, search_query = searchClients(request)
-
-    # custom_range, invoices = paginateBlocks(request, clients, 11)
 
     clients = request.user.profile.client_set.all()
+    custom_range, clients = paginateBlocks(request, clients, 11)
+
 
     client = ClientForm()
     if request.method == 'POST':
@@ -171,8 +190,15 @@ def clients(request):
             messages.success(request, 'Client was created.')
             redirect('clients')
 
-    context = {'clients': clients, 'client': client}
+    context = {'clients': clients, 'client': client, 'custom_range': custom_range}
     return render(request, 'orders/clients.html', context)
+
+
+@login_required(login_url='login')
+def deleteClient(request, pk):
+    request.user.profile.client_set.get(id=pk).delete()
+    messages.success(request, 'Client was deleted!')
+    return redirect('clients')
 
 
 @login_required(login_url='login')

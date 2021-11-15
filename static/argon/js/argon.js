@@ -838,18 +838,22 @@ var BarsChart = (function() {
 	// Init chart
 	function initChart($chart) {
 
+		let chartElement = document.querySelector('#chart-sales-dark')
+
 		// Create chart
 		var ordersChart = new Chart($chart, {
 			type: 'bar',
 			data: {
-				labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+				labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul' ,'Ags', 'Sep', 'Oct', 'Nov', 'Dec'],
 				datasets: [{
-					label: 'Sales',
-					data: [25, 20, 30, 22, 17, 29]
+					label: 'Invoices',
+					data: chartElement.getAttribute('data-update').split('-')
 				}]
 			}
 		});
 
+		console.log(ordersChart);
+		
 		// Save to jQuery object
 		$chart.data('chart', ordersChart);
 	}
