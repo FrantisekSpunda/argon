@@ -27,55 +27,107 @@
             </div>
             </div>
             <div class="card-body">
-            <form method="POST" action="" enctype="multipart/form-data">
+            <form method="POST" action="" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
 
-                <h6 class="heading-small text-muted mb-4">Subscriber information</h6>
+                <h6 class="heading-small text-muted mb-4">Client information</h6>
                 <div class="pl-lg-4">
                     <div class="row">
                         <div class="col-lg-3">
                             <div class="form-group">
-                                {{ invoice.subscriber_name }}
+                                {{ invoice.client }}
                             </div>
                         </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                {{ invoice.subscriber_ic }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                {{ invoice.subscriber_address }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                {{ invoice.subscriber_city }}
+                        <div class="pl-lg-3">
+                            <button type="button" class="btn btn-block btn-default" data-toggle="modal" data-target="#modal-form">Form</button>
+                            <div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog modal- modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-body p-0">
+                                        <div class="card bg-secondary border-0 mb-0">
+                                            <div class="card-header bg-transparent pb-3">
+                                                <div class="text-muted text-center mt-1 mb-1">
+                                                <small>CREATE NEW CLIENT</small>
+                                                </div>
+                                            </div>
+                                            <div class="card-body px-lg-5 py-lg-5">
+                                                    <h6 class="heading-small text-muted mb-4">Client basic info</h6>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                                                            </div>
+                                                            {{ client.client_name }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                                                            </div>
+                                                            {{ client.client_email }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-badge"></i></span>
+                                                            </div>
+                                                            {{ client.client_ic }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-briefcase-24"></i></span>
+                                                            </div>
+                                                            {{ client.client_dic }}
+                                                        </div>
+                                                    </div>
+                                                    <h6 class="heading-small text-muted mb-4">Client address</h6>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-pin-3"></i></span>
+                                                            </div>
+                                                            {{ client.client_address }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-building"></i></span>
+                                                            </div>
+                                                            {{ client.client_city }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-world-2"></i></span>
+                                                            </div>
+                                                            {{ client.client_country }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <div class="input-group input-group-merge input-group-alternative">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text"><i class="ni ni-square-pin"></i></span>
+                                                            </div>
+                                                            {{ client.client_postal_code }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-center">
+                                                    <button type="submit" value="Create client" name="submit_client" class="btn btn-primary my-4">Create Client</button>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                {{ invoice.subscriber_email }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                {{ invoice.subscriber_dic }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                {{ invoice.subscriber_country }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                {{ invoice.subscriber_postal_code }}
-                            </div>
-                        </div>
-                    </div>
+                </div>
                 </div>
                 <hr class="my-4" />
                 <!-- Address -->
@@ -202,7 +254,7 @@
                     </div>
                 </div>
                 <hr class="my-4" />
-                <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                <button type="submit" name="submit_invoice" class="btn btn-primary mt-4">Submit</button>
             </form>
             </div>
         </div>

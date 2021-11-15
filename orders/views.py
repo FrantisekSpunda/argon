@@ -4,7 +4,7 @@ from django.contrib import messages
 
 from argon.utils import paginateBlocks
 from .models import Invoice
-from .forms import InvoiceForm, ItemForm
+from .forms import InvoiceForm, ItemForm, ClientForm
 from datetime import date, timedelta
 from .utils import searchInvoices
 from argon.utils import paginateBlocks
@@ -49,33 +49,44 @@ def newInvoice(request):
     # Get form of invoice and item
     invoice = InvoiceForm()
     item = ItemForm()
+    client = ClientForm()
 
     if request.method == 'POST':
-        invoice = InvoiceForm(request.POST)
-        
-        if invoice.is_valid():
-            invoice = invoice.save(commit=False)
-            invoice.invoice_id = invoice_id
-            invoice.supplier = request.user.profile
-            invoice.save()
+        if 'submit_invoice' in request.POST:
+            invoice = InvoiceForm(request.POST)
+            
+            if invoice.is_valid():
+                invoice = invoice.save(commit=False)
+                invoice.invoice_id = invoice_id
+                invoice.supplier = request.user.profile
+                invoice.save()
 
-            for index in range(len(request.POST.getlist('name'))) :
-                item = ItemForm()
-                item = item.save(commit=False)
-                item.invoice = invoice
-                item.name = request.POST.getlist('name')[index]
-                item.price = request.POST.getlist('price')[index]
-                item.amouth = request.POST.getlist('amouth')[index]
-                item.dph = request.POST.getlist('dph')[index]
-                item.save()
+                for index in range(len(request.POST.getlist('name'))) :
+                    item = ItemForm()
+                    item = item.save(commit=False)
+                    item.invoice = invoice
+                    item.name = request.POST.getlist('name')[index]
+                    item.price = request.POST.getlist('price')[index]
+                    item.amouth = request.POST.getlist('amouth')[index]
+                    item.dph = request.POST.getlist('dph')[index]
+                    item.save()
 
-            invoice.getTotalPrice
-            messages.success(request, 'Invoice was succesfully created and sended.')
-            return redirect('dashboard')
-        else:
-            messages.error(request, 'Wrong data in form!')
+                invoice.getTotalPrice
+                messages.success(request, 'Invoice was succesfully created and sended.')
+                return redirect('dashboard')
+            else:
+                messages.error(request, 'Wrong data in form!')
+        elif 'submit_client' in request.POST:
+            client = ClientForm(request.POST)
+            if client.is_valid():
+                client.save()
 
-    context = {'invoice': invoice, 'item': item}
+                messages.success(request, 'Client was created.')
+                redirect('new-invoice')
+            else:
+                messages.error(request, 'Client form is not valid!')
+
+    context = {'invoice': invoice, 'item': item, 'client': client}
     return render(request, 'orders/invoice-form.html', context)
 
 @login_required(login_url='login')

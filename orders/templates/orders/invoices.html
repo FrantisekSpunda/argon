@@ -50,7 +50,7 @@
                             <a href="{% url 'invoice' invoice.id %}">{{ invoice.invoice_id }}</a>
                             </th>
                             <td>
-                            {{ invoice.subscriber_name }}
+                            {{ invoice.client.client_name }}
                             </td>
                             <td>
                             {{ invoice.total_price }} $

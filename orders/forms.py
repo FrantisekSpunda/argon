@@ -3,7 +3,7 @@ from django.contrib.auth import models
 from django.forms import ModelForm, fields
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Invoice, Item
+from .models import Client, Invoice, Item
 
 class InvoiceForm(ModelForm):
     class Meta:
@@ -30,3 +30,15 @@ class ItemForm(ModelForm):
 
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control', 'placeholder': name.replace('_', ' ')})
+
+class ClientForm(ModelForm):
+    class Meta:
+        model = Client
+        fields = '__all__'
+
+    
+    def __init__(self, *args, **kwargs):
+        super(ClientForm, self).__init__(*args, **kwargs)
+
+        for name,field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control', 'placeholder': name.replace('_', ' ').capitalize()})
