@@ -35,7 +35,9 @@ class Invoice(models.Model):
     account_number = models.CharField(max_length=128)
     variable_symbol = models.CharField(max_length=128)
 
-    text = models.TextField(max_length=256, default='Put some text here for subscriber...')
+    text = models.TextField(max_length=256, default='Put some text here for client...')
+
+    sended = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)

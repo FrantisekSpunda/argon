@@ -7,5 +7,7 @@ urlpatterns = [
     path('new-invoice/', views.newInvoice, name='new-invoice'),
     path('invoice/<str:pk>/', views.invoice, name='invoice'),
     path('invoices/', views.invoices, name='invoices'),
+    path('new-client/', views.newClient, name='new-client'),
+    path('client/<str:pk>', views.client, name='client'),
     path('clients/', views.clients, name='clients'),
 ]

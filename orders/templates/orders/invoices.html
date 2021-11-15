@@ -37,9 +37,10 @@
                         <thead class="thead-light">
                         <tr>
                             <th scope="col">Invoice</th>
-                            <th scope="col">Subscriber</th>
+                            <th scope="col">Client</th>
                             <th scope="col">Total price</th>
                             <th scope="col">Date Maturity</th>
+                            <th scope="col">Send</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -50,13 +51,28 @@
                             <a href="{% url 'invoice' invoice.id %}">{{ invoice.invoice_id }}</a>
                             </th>
                             <td>
-                            {{ invoice.client.client_name }}
+                            <a href="{% url 'client' invoice.client.id %}">{{ invoice.client.client_name }}</a>
                             </td>
                             <td>
                             {{ invoice.total_price }} $
                             </td>
                             <td>
                             {{ invoice.date_maturity }}
+                            </td>
+                            <td>
+                            {% if invoice.sended %}
+                            <button class="btn btn-icon btn-sm">
+                                <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></i></span>
+                            </button>
+                            {% else %}
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="text" value="{{ invoice.id }}" style="display: none;" name="send_invoce">
+                                <button class="btn btn-icon btn-sm" type="submit">
+                                    <span class="btn-inner--icon"><i class="ni ni-send text-default"></i></span>
+                                </button>
+                            </form>
+                            {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

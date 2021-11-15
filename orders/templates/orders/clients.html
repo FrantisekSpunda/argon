@@ -11,11 +11,11 @@
     <div class="header bg-primary pb-6">
     <div class="container-fluid">
         <div class="header-body">
-        <div class="row align-items-center py-4">
-            <div class="col-lg-12 col-5 text-right">
-            <a href="{% url 'new-invoice' %}" class="btn btn-sm btn-neutral">New invoice</a>
+            <div class="row align-items-center py-4">
+                <div class="col-lg-12 col-5 text-right">
+                    <a href="{% url 'new-client' %}" class="btn btn-sm btn-neutral">New client</a>
+                </div>
             </div>
-        </div>
         </div>
     </div>
     </div>
@@ -44,19 +44,19 @@
                         </thead>
                         <tbody>
 
-                        {% for client in clients %}
+                        {% for oneclient in clients %}
                         <tr>
                             <th scope="row">
-                            {{ client.client_name }}
+                            <a href="{% url 'client' oneclient.id %}">{{ oneclient.client_name }}</a>
                             </th>
                             <td>
-                            {{ client.client_email }}
+                            {{ oneclient.client_email }}
                             </td>
                             <td>
-                            {{ client.client_address }}
+                            {{ oneclient.client_address }}
                             </td>
                             <td>
-                            {{ client.invoice_set.all.count }}
+                            {{ oneclient.invoice_set.all.count }}
                             </td>
                         </tr>
                         {% endfor %}

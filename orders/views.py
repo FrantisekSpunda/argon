@@ -9,6 +9,8 @@ from datetime import date, timedelta
 from .utils import searchClients, searchInvoices
 from argon.utils import paginateBlocks
 
+# import pdfkit
+
 
 # DASHBOARD ######################
 ##################################
@@ -20,25 +22,26 @@ def frontpage(request):
 def dashboard(request):
     profile = request.user.profile
 
-    enddate = date.today()
+    enddate = date.today() + timedelta(days=1)
     startdate = enddate - timedelta(days=30)
     date__range=[startdate, enddate]
 
     last_5_invoices = profile.invoice_set.all()[:5]
     last_month_invoices = profile.invoice_set.filter(date_exposure__range=date__range)
     invoices = profile.invoice_set.all()
+    last_month_clients = profile.client_set.filter(created__range=date__range)
 
     profit_this_month = 0
     for invoice in last_month_invoices :
         profit_this_month += invoice.total_price
         
 
-    context = {'profile': profile, 'invoices': invoices, 'last_5_invoices': last_5_invoices, 'last_month_invoices': last_month_invoices, 'profit_this_month': profit_this_month}
+    context = {'profile': profile, 'invoices': invoices, 'last_5_invoices': last_5_invoices, 'last_month_invoices': last_month_invoices, 'profit_this_month': profit_this_month, 'last_month_clients': last_month_clients}
     return render(request, 'orders/dashboard.html', context)
 
 
-# INVOICES #######################
-##################################
+####################
+##### INVOICES #####
 @login_required(login_url='login')
 def newInvoice(request):
     # Get number of invoice
@@ -73,7 +76,7 @@ def newInvoice(request):
 
                 invoice.getTotalPrice
                 messages.success(request, 'Invoice was succesfully created and sended.')
-                return redirect('dashboard')
+                return redirect('invoices')
             else:
                 messages.error(request, 'Wrong data in form!')
         elif 'submit_client' in request.POST:
@@ -101,7 +104,6 @@ def invoice(request, pk):
     items = []
     for curr_item in curr_items:
         items.append(ItemForm(instance=curr_item))
-        print(curr_item)
 
     if request.method == 'POST':
         invoice = InvoiceForm(request.POST, instance=curr_invoice)
@@ -124,22 +126,28 @@ def invoice(request, pk):
 
             invoice.getTotalPrice
             messages.success(request, 'Invoice was succesfully updated!')
-            return redirect('dashboard')
-    print(items)
+            return redirect('invoices')
+
     context = {'invoice': invoice, 'items': items}
     return render(request, 'orders/invoice-form.html', context)
 
-
 @login_required(login_url='login')
 def invoices(request):
-    profile = request.user.profile
-    invoices, search_query = searchInvoices(request)
 
+    if request.method == 'POST':
+        invoice = request.user.profile.invoice_set.get(id=request.POST['send_invoce'])
+        invoice.sended = True
+        invoice.save()
+
+    invoices, search_query = searchInvoices(request)
     custom_range, invoices = paginateBlocks(request, invoices, 11)
 
     context = {'invoices': invoices, 'search_query': search_query, 'custom_range': custom_range}
     return render(request, 'orders/invoices.html', context)
 
+
+####################
+##### CLIENTS #####
 @login_required(login_url='login')
 def clients(request):
     # clients, search_query = searchClients(request)
@@ -148,7 +156,96 @@ def clients(request):
 
     clients = request.user.profile.client_set.all()
 
-    print(clients)
+    client = ClientForm()
+    if request.method == 'POST':
+        client = ClientForm(request.POST)
+        if client.is_valid():
+            client = client.save(commit=False)
+            client.client_owner = request.user.profile
+            client.save()
 
-    context = {'clients': clients}
+            messages.success(request, 'Client was created.')
+            redirect('clients')
+
+    context = {'clients': clients, 'client': client}
     return render(request, 'orders/clients.html', context)
+
+
+@login_required(login_url='login')
+def newClient(request):
+    
+    client = ClientForm()
+
+    if request.method == 'POST':
+        client = ClientForm(request.POST)
+        if client.is_valid():
+            client = client.save(commit=False)
+            client.client_owner = request.user.profile
+            client.save()
+
+            messages.success(request, 'Client was created.')
+            return redirect('clients')
+        else:
+            messages.error(request, 'Client form is not valid!')
+
+    context = {'client': client}
+
+
+    return render(request, 'orders/client-form.html', context)
+
+
+@login_required(login_url='login')
+def client(request, pk):
+    
+    curr_client = request.user.profile.client_set.get(id=pk)
+    client = ClientForm(instance=curr_client)
+
+    if request.method == 'POST':
+        client = ClientForm(request.POST, instance=curr_client)
+        if client.is_valid():
+            client = client.save(commit=False)
+            client.client_owner = request.user.profile
+            client.save()
+
+            messages.success(request, 'Client was created.')
+            return redirect('clients')
+        else:
+            messages.error(request, 'Client form is not valid!')
+
+    context = {'client': client}
+    return render(request, 'orders/client-form.html', context)
+
+
+####################
+### GENERATE PDF ###
+def view_PDF(request, id=None):
+    invoice = get_object_or_404(Invoice, id=id)
+    lineitem = invoice.lineitem_set.all()
+
+    context = {
+        "company": {
+            "name": "Ibrahim Services",
+            "address" :"67542 Jeru, Chatsworth, CA 92145, US",
+            "phone": "(818) XXX XXXX",
+            "email": "contact@ibrahimservice.com",
+        },
+        "invoice_id": invoice.id,
+        "invoice_total": invoice.total_amount,
+        "customer": invoice.customer,
+        "customer_email": invoice.customer_email,
+        "date": invoice.date,
+        "due_date": invoice.due_date,
+        "billing_address": invoice.billing_address,
+        "message": invoice.message,
+        "lineitem": lineitem,
+
+    }
+    return render(request, 'invoice/pdf_template.html', context)
+
+def generate_PDF(request, id):
+    # Use False instead of output path to save pdf to a variable
+    pdf = pdfkit.from_url(request.build_absolute_uri(reverse('invoice:invoice-detail', args=[id])), False)
+    response = HttpResponse(pdf,content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+
+    return response
