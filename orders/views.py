@@ -1,5 +1,6 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404, reverse
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.contrib import messages
 
 from argon.utils import paginateBlocks
@@ -9,7 +10,7 @@ from datetime import date, timedelta
 from .utils import searchClients, searchInvoices
 from argon.utils import paginateBlocks
 
-# import pdfkit
+import pdfkit
 
 
 # DASHBOARD ######################
@@ -218,34 +219,3 @@ def client(request, pk):
 
 ####################
 ### GENERATE PDF ###
-def view_PDF(request, id=None):
-    invoice = get_object_or_404(Invoice, id=id)
-    lineitem = invoice.lineitem_set.all()
-
-    context = {
-        "company": {
-            "name": "Ibrahim Services",
-            "address" :"67542 Jeru, Chatsworth, CA 92145, US",
-            "phone": "(818) XXX XXXX",
-            "email": "contact@ibrahimservice.com",
-        },
-        "invoice_id": invoice.id,
-        "invoice_total": invoice.total_amount,
-        "customer": invoice.customer,
-        "customer_email": invoice.customer_email,
-        "date": invoice.date,
-        "due_date": invoice.due_date,
-        "billing_address": invoice.billing_address,
-        "message": invoice.message,
-        "lineitem": lineitem,
-
-    }
-    return render(request, 'invoice/pdf_template.html', context)
-
-def generate_PDF(request, id):
-    # Use False instead of output path to save pdf to a variable
-    pdf = pdfkit.from_url(request.build_absolute_uri(reverse('invoice:invoice-detail', args=[id])), False)
-    response = HttpResponse(pdf,content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
-
-    return response
