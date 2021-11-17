@@ -13,7 +13,7 @@ def sendInvoice(sender, instance, created, **kwargs):
     if invoice.sended == True:
 
         subject = 'Invoice numb.: '+ invoice.invoice_id +' from '+ invoice.supplier.first_name +' '+ invoice.supplier.last_name
-        message = 'Sended invoice from argon web.'
+        message = '<h1>Sended invoice from argon web.</h1>'
 
         send_mail(
             subject,

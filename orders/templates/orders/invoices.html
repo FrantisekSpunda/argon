@@ -92,6 +92,7 @@
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                         <a class="dropdown-item" href="{% url 'invoice' invoice.id %}">Edit</a>
                                         <a class="dropdown-item" href="{% url 'client' invoice.client.id %}">Edit client</a>
+                                        <a class="dropdown-item" href="{% url 'view-invoice' invoice.id %}" target="_blank">View invoice</a>
                                         <a class="dropdown-item" href="{% url 'pdf-invoice' invoice.id %}">Download PDF</a>
                                         <a class="dropdown-item" href="{% url 'delete-invoice' invoice.id %}">Delete</a>
                                     </div>

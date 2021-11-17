@@ -1,4 +1,5 @@
 from django.shortcuts import redirect, render
+from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -39,19 +40,20 @@ def dashboard(request):
     for invoice in last_month_invoices :
         profit_this_month += invoice.total_price
 
-    last_year_invoices = []
+    last_year_invoices_count = []
     for month in range(12):
-        last_year_invoices.append(profile.invoice_set.filter(date_exposure__year__gte=year,date_exposure__year__lte=year,date_exposure__month__gte=month + 1,date_exposure__month__lte=month + 1).count())
+        last_year_invoices_count.append(profile.invoice_set.filter(date_exposure__year__gte=year,date_exposure__year__lte=year,date_exposure__month__gte=month + 1,date_exposure__month__lte=month + 1).count())
 
-    # last_week_invoices = []
-    # for month in range(12):
-    #     last_year_invoices.append(profile.invoice_set.filter(date_exposure__year__gte=year,date_exposure__year__lte=year,date_exposure__month__gte=month + 1,date_exposure__month__lte=month + 1).count())
-
-
-
+    last_year_invoices_sales = []
+    for month in range(12):
+        month_invoices = profile.invoice_set.filter(date_exposure__year__gte=year,date_exposure__year__lte=year,date_exposure__month__gte=month + 1,date_exposure__month__lte=month + 1)
+        month_invoices_sales = 0
+        for invoice in month_invoices:
+            month_invoices_sales += invoice.total_price
+        last_year_invoices_sales.append(month_invoices_sales)
         
 
-    context = {'profile': profile, 'invoices': invoices, 'last_5_invoices': last_5_invoices, 'last_month_invoices': last_month_invoices, 'profit_this_month': profit_this_month, 'last_month_clients': last_month_clients, 'last_year_invoices': last_year_invoices}
+    context = {'profile': profile, 'invoices': invoices, 'last_5_invoices': last_5_invoices, 'last_month_invoices': last_month_invoices, 'profit_this_month': profit_this_month, 'last_month_clients': last_month_clients, 'last_year_invoices_count': last_year_invoices_count, 'last_year_invoices_sales': last_year_invoices_sales}
     return render(request, 'orders/dashboard.html', context)
 
 
@@ -66,13 +68,19 @@ def newInvoice(request):
 
     # Get form of invoice and item
     invoice = InvoiceForm()
+    var_clients = request.user.profile.client_set.all()
+    clients = [(i.id, i.client_name) for i in var_clients]
+    invoice.fields['client'] = forms.ChoiceField(choices=clients)
+    invoice.fields['client'].widget.attrs.update({'class':'form-control'})
+    
     item = ItemForm()
+
     client = ClientForm()
 
     if request.method == 'POST':
         if 'submit_invoice' in request.POST:
             invoice = InvoiceForm(request.POST)
-            
+
             if invoice.is_valid():
                 invoice = invoice.save(commit=False)
                 invoice.invoice_id = invoice_id
@@ -114,6 +122,11 @@ def invoice(request, pk):
     curr_invoice = request.user.profile.invoice_set.get(id=pk)
     invoice_id = curr_invoice.invoice_id
     invoice = InvoiceForm(instance=curr_invoice)
+    
+    var_clients = request.user.profile.client_set.all()
+    clients = [(i.id, i.client_name) for i in var_clients]
+    invoice.fields['client'] = forms.ChoiceField(choices=clients)
+    invoice.fields['client'].widget.attrs.update({'class':'form-control'})
 
     curr_items = curr_invoice.item_set.all()
     items = []
@@ -273,3 +286,8 @@ def pdfInvoice(request, pk):
     buf.seek(0)
 
     return FileResponse(buf, as_attachment=True, filename='invoice_'+ invoice.invoice_id +'.pdf')
+
+def viewInvoice(request, pk):
+    invoice = request.user.profile.invoice_set.get(id=pk)
+    context = {'invoice': invoice}
+    return render(request, 'orders/invoice-template.html', context)

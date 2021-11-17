@@ -2672,7 +2672,7 @@ pre code
 .table-responsive
 {
     display: block;
-    overflow-x: auto;
+    overflow-x: visible;
 
     width: 100%;
 

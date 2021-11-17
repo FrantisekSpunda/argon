@@ -23,7 +23,7 @@ class Client(models.Model):
         return self.client_name
         
 class Invoice(models.Model):
-    invoice_id = models.CharField(blank=True, max_length=8, null=True, unique=True)
+    invoice_id = models.CharField(blank=True, max_length=8, null=True)
     supplier = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -52,6 +52,7 @@ class Invoice(models.Model):
     def getTotalPrice(self):
         items = self.item_set.all()
         
+        self.total_price = 0
         for item in items:
             self.total_price += (item.price * item.amouth)
 
@@ -60,9 +61,9 @@ class Invoice(models.Model):
 class Item(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=128, null=True)
-    price = models.FloatField(default=0, null=True, blank=True)
-    amouth = models.IntegerField(default=1, null=True, blank=True)
-    dph = models.FloatField(default=21, null=True, blank=True)
+    price = models.FloatField(default=0)
+    amouth = models.IntegerField(default=1)
+    dph = models.FloatField(default=21)
     
     created = models.DateTimeField(auto_now_add=True)
     item_id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)

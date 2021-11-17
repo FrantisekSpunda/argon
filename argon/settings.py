@@ -130,10 +130,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'from.dev.search@gmail.com'
 EMAIL_HOST_PASSWORD = 'hrjfodpmksysvtzv'    #34aJedem - real password for email
 

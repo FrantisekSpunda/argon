@@ -14,4 +14,5 @@ urlpatterns = [
     path('clients/', views.clients, name='clients'),
 
     path('pdf-invoice/<str:pk>', views.pdfInvoice, name='pdf-invoice'),
+    path('view-invoice/<str:pk>', views.viewInvoice, name='view-invoice'),
 ]

@@ -15,6 +15,9 @@ class CustomUserCreationForm(UserCreationForm):
         for name,field in self.fields.items():
             field.widget.attrs.update({'class':'form-control', 'type': 'text'})
 
+        for key in self.fields:
+            self.fields[key].required = True
+
         self.fields['first_name'].widget.attrs.update({'placeholder':'First name'})
         self.fields['last_name'].widget.attrs.update({'placeholder':'Last name'})
         self.fields['username'].widget.attrs.update({'placeholder':'Username'})

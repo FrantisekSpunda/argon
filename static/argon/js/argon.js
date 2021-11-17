@@ -297,7 +297,7 @@ var Charts = (function() {
 				beginAtZero: true,
 				padding: 10,
 				callback: function(value) {
-					if (!(value % 10)) {
+					if (!(value % 5)) {
 						return value
 					}
 				}
@@ -844,7 +844,7 @@ var BarsChart = (function() {
 		var ordersChart = new Chart($chart, {
 			type: 'bar',
 			data: {
-				labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul' ,'Ags', 'Sep', 'Oct', 'Nov', 'Dec'],
+				labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul' ,'Ags', 'Sep', 'Oct', 'Nov', 'Dec'],
 				datasets: [{
 					label: 'Invoices',
 					data: chartElement.getAttribute('data-update').split('-')
@@ -882,6 +882,7 @@ var SalesChart = (function() {
   // Methods
 
   function init($chart) {
+	let chartElement = document.querySelector('#chart-sales')
 
     var salesChart = new Chart($chart, {
       type: 'line',
@@ -896,7 +897,7 @@ var SalesChart = (function() {
             ticks: {
               callback: function(value) {
                 if (!(value % 10)) {
-                  return '$' + value + 'k';
+                  return value + '$';
                 }
               }
             }
@@ -920,10 +921,10 @@ var SalesChart = (function() {
         }
       },
       data: {
-        labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul' ,'Ags', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [{
           label: 'Performance',
-          data: [0, 20, 10, 30, 15, 40, 20, 60, 60]
+          data: chartElement.getAttribute('data-update').split('-')
         }]
       }
     });
