@@ -1,7 +1,10 @@
+from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.mail import EmailMessage, send_mail
+from django.conf import settings
 
 from argon.utils import paginateBlocks
 from .models import Invoice
@@ -10,11 +13,7 @@ from datetime import date, timedelta, datetime
 from .utils import searchArgon
 from argon.utils import paginateBlocks
 
-from django.http import FileResponse, response
-import io
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import letter
+import pdfkit
 
 # DASHBOARD ######################
 ##################################
@@ -170,11 +169,31 @@ def deleteInvoice(request, pk):
 
 @login_required(login_url='login')
 def invoices(request):
-
     if request.method == 'POST':
+
         invoice = request.user.profile.invoice_set.get(id=request.POST['send_invoce'])
         invoice.sended = True
         invoice.save()
+
+        # send email with invoice
+        subject = 'Invoice numb.: '+ invoice.invoice_id +' from '+ invoice.supplier.first_name +' '+ invoice.supplier.last_name
+        message = 'Sended invoice from argon web.'
+        mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, [invoice.client.client_email])
+
+        cookie_list = request.COOKIES
+        options = {
+                'cookie' : [
+                    ('csrftoken', cookie_list['csrftoken']),
+                    ('sessionid', cookie_list['sessionid']),
+                    ]
+                }
+        projectUrl = request.get_host() + '/view-invoice/'+ str(invoice.id)
+
+        pdf = pdfkit.from_url(projectUrl,False, options=options)
+
+        mail.attach('invoice-'+invoice.invoice_id, pdf, 'application/pdf')
+        mail.send()
+
 
     invoices, search_query = searchArgon(request)
     custom_range, invoices = paginateBlocks(request, invoices, 11)
@@ -261,33 +280,38 @@ def client(request, pk):
 
 ####################
 ### GENERATE PDF ###
-def pdfInvoice(request, pk):
 
-    buf = io.BytesIO()
-    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-    textob = c.beginText()
-    textob.setTextOrigin(inch, inch)
-    textob.setFont('Helvetica',14)
-    
-    invoice = request.user.profile.invoice_set.get(id=pk)
-    # lines in pdf
-    lines = [
-        str(invoice.client.client_name),
-        str(invoice.total_price),
-        str(invoice.client.client_address),
-    ]
-
-    for line in lines:
-        textob.textLine(line)
-
-    c.drawText(textob)
-    c.showPage()
-    c.save()
-    buf.seek(0)
-
-    return FileResponse(buf, as_attachment=True, filename='invoice_'+ invoice.invoice_id +'.pdf')
-
+@login_required(login_url='login')
 def viewInvoice(request, pk):
     invoice = request.user.profile.invoice_set.get(id=pk)
-    context = {'invoice': invoice}
+    items = invoice.item_set.all()
+    tax_take = 0
+    for item in items:
+        tax_take += item.amouth * item.price * item.dph / 100
+    total_price_with_tax = tax_take + invoice.total_price
+
+    context = {'invoice': invoice, 'items': items, 'tax_take': tax_take, 'total_price_with_tax': total_price_with_tax}
     return render(request, 'orders/invoice-template.html', context)
+
+def pdfInvoice(request, pk):
+    invoice = request.user.profile.invoice_set.get(id=pk)
+
+    cookie_list = request.COOKIES
+    # pass the cookies. You can add whatever other options you want to use
+    options = {
+            'cookie' : [
+                ('csrftoken', cookie_list['csrftoken']),
+                ('sessionid', cookie_list['sessionid']),
+                ]
+            }
+
+    # Generate the pdf
+    
+    projectUrl = request.get_host() + '/view-invoice/'+ str(pk)
+
+    pdf = pdfkit.from_url(projectUrl,False, options=options)
+
+    response = HttpResponse(pdf,content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="inovice-'+ invoice.invoice_id +'.pdf"'
+
+    return response

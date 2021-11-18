@@ -24,59 +24,43 @@
         <div><span>EMAIL</span> <a href="mailto:{{ invoice.client.client_email }}">{{ invoice.client.client_email }}</a></div>
         <div><span>DATE</span> {{ invoice.date_exposure }}</div>
         <div><span>DUE DATE</span> {{ invoice.date_maturity }}</div>
+        <br>
+        <div><span style="width: 88px;">ACCOUNT NUMBER</span> {{ invoice.account_number }}</div>
+        <div><span style="width: 88px;">VARIABLE SYMBOL</span> {{ invoice.variable_symbol }}</div>
       </div>
     </header>
     <main>
       <table>
         <thead>
           <tr>
-            <th class="service">SERVICE</th>
-            <th class="desc">DESCRIPTION</th>
-            <th>PRICE</th>
-            <th>QTY</th>
+            <th class="service">NAME</th>
+            <th>PRICE FOR ONE</th>
+            <th>AMOUTH</th>
+            <th>DPH</th>
             <th>TOTAL</th>
           </tr>
         </thead>
         <tbody>
+          {% for item in items %}
           <tr>
-            <td class="service">Design</td>
-            <td class="desc">Creating a recognizable design solution based on the company's existing visual identity</td>
-            <td class="unit">$40.00</td>
-            <td class="qty">26</td>
-            <td class="total">$1,040.00</td>
+            <td class="service">{{ item.name }}</td>
+            <td class="unit">{{ item.price|floatformat:2 }}$</td>
+            <td class="amouth">{{ item.amouth }}</td>
+            <td class="dph">{{ item.dph|floatformat:0 }}%</td>
+            <td class="total">{% widthratio item.price 1 item.amouth %}$</td>
           </tr>
-          <tr>
-            <td class="service">Development</td>
-            <td class="desc">Developing a Content Management System-based Website</td>
-            <td class="unit">$40.00</td>
-            <td class="qty">80</td>
-            <td class="total">$3,200.00</td>
-          </tr>
-          <tr>
-            <td class="service">SEO</td>
-            <td class="desc">Optimize the site for search engines (SEO)</td>
-            <td class="unit">$40.00</td>
-            <td class="qty">20</td>
-            <td class="total">$800.00</td>
-          </tr>
-          <tr>
-            <td class="service">Training</td>
-            <td class="desc">Initial training sessions for staff responsible for uploading web content</td>
-            <td class="unit">$40.00</td>
-            <td class="qty">4</td>
-            <td class="total">$160.00</td>
-          </tr>
+          {% endfor %}
           <tr>
             <td colspan="4">SUBTOTAL</td>
-            <td class="total">$5,200.00</td>
+            <td class="total">{{ invoice.total_price }}$</td>
           </tr>
           <tr>
-            <td colspan="4">TAX 25%</td>
-            <td class="total">$1,300.00</td>
+            <td colspan="4">TAX TAKE</td>
+            <td class="total">{{ tax_take }}$</td>
           </tr>
           <tr>
             <td colspan="4" class="grand total">GRAND TOTAL</td>
-            <td class="grand total">$6,500.00</td>
+            <td class="grand total">{{ total_price_with_tax }}$</td>
           </tr>
         </tbody>
       </table>
