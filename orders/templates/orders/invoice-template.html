@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Example 1</title>
+    <link rel="stylesheet" href="{% static 'assets/styles/style-view-invoice.css' %}" media="all" />
+  </head>
+  <body>
+    <header class="clearfix">
+      <div id="logo">
+        <img src="{% static 'argon/img/brand/blue.png' %}">
+      </div>
+      <h1>INVOICE {{ invoice.invoice_id }}</h1>
+      <div id="company" class="clearfix">
+        <div>{{ invoice.supplier.first_name }} {{ invoice.supplier.last_name }}</div>
+        <div>{{ invoice.supplier.address }}, {{ invoice.supplier.city }} {{ invoice.supplier.postal_code }}<br>{{ invoice.supplier.country }}</div>
+        <div><a href="mailto:{{ invoice.supplier.email }}">{{ invoice.supplier.email }}</a></div>
+      </div>
+      <div id="project">
+        <div><span>CLIENT</span> {{ invoice.client.client_name }}</div>
+        <div><span>ADDRESS</span> {{ invoice.client.client_address }}, {{ invoice.client.client_city }} {{ invoice.client.client_postal_code }}</div>
+        <div><span>EMAIL</span> <a href="mailto:{{ invoice.client.client_email }}">{{ invoice.client.client_email }}</a></div>
+        <div><span>DATE</span> {{ invoice.date_exposure }}</div>
+        <div><span>DUE DATE</span> {{ invoice.date_maturity }}</div>
+        <br>
+        <div><span style="width: 88px;">ACCOUNT NUMBER</span> {{ invoice.account_number }}</div>
+        <div><span style="width: 88px;">VARIABLE SYMBOL</span> {{ invoice.variable_symbol }}</div>
+      </div>
+    </header>
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th class="service">NAME</th>
+            <th>PRICE FOR ONE</th>
+            <th>AMOUTH</th>
+            <th>DPH</th>
+            <th>TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td class="service">{{ item.name }}</td>
+            <td class="unit">{{ item.price|floatformat:2 }}$</td>
+            <td class="amouth">{{ item.amouth }}</td>
+            <td class="dph">{{ item.dph|floatformat:0 }}%</td>
+            <td class="total">{% widthratio item.price 1 item.amouth %}$</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td colspan="4">SUBTOTAL</td>
+            <td class="total">{{ invoice.total_price }}$</td>
+          </tr>
+          <tr>
+            <td colspan="4">TAX TAKE</td>
+            <td class="total">{{ tax_take }}$</td>
+          </tr>
+          <tr>
+            <td colspan="4" class="grand total">GRAND TOTAL</td>
+            <td class="grand total">{{ total_price_with_tax }}$</td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="notices">
+        <div>MESSAGE:</div>
+        
+        <div class="notice">{{ invoice.text }}</div>
+      </div>
+    </main>
+    <footer>
+      Invoice was created on a computer and is valid without the signature and seal.
+    </footer>
+  </body>
+</html>

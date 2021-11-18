@@ -1,0 +1,124 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="main-content" id="panel">
+    <!-- Topnav -->
+    {% include 'topnav.html' %}
+    <!-- Header -->
+    <!-- Header -->
+    <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+        <div class="row align-items-center py-4">
+            <div class="col-lg-12 col-5 text-right">
+            <a href="{% url 'new-invoice' %}" class="btn btn-sm btn-neutral">New invoice</a>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- Page content -->
+    <div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col">
+                    <h3 class="mb-0">Invoices</h3>
+                    </div>
+                </div>
+                </div>
+                <div class="table-responsive">
+                    <!-- Invoices table -->
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Invoice</th>
+                            <th scope="col">Client</th>
+                            <th scope="col">Total price</th>
+                            <th scope="col">Date Maturity</th>
+                            <th scope="col">Send email</th>
+                            <th scope="col">Download</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for invoice in invoices %}
+                        <tr>
+                            <th scope="row">
+                            {{ invoice.invoice_id }}
+                            </th>
+
+                            <td>
+                            {% if invoice.client %}
+                                {{ invoice.client.client_name }}
+                            {% else %}
+                                deleted
+                            {% endif %}
+                            </td>
+
+                            <td>
+                            {{ invoice.total_price }} $
+                            </td>
+
+                            <td>
+                            {{ invoice.date_maturity }}
+                            </td>
+
+                            <td>
+                                {% if invoice.sended %}
+                                <button class="btn btn-icon btn-sm">
+                                    <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></i></span>
+                                </button>
+                                {% else %}
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <input type="text" value="{{ invoice.id }}" style="display: none;" name="send_invoce">
+                                    <button class="btn btn-icon btn-sm" type="submit">
+                                        <span class="btn-inner--icon"><i class="ni ni-send text-default"></i></span>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="dropdown">
+                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a class="dropdown-item" href="{% url 'invoice' invoice.id %}">Edit</a>
+                                        <a class="dropdown-item" href="{% url 'client' invoice.client.id %}">Edit client</a>
+                                        <a class="dropdown-item" href="{% url 'view-invoice' invoice.id %}" target="_blank">View invoice</a>
+                                        <a class="dropdown-item" href="{% url 'pdf-invoice' invoice.id %}">Download PDF</a>
+                                        <a class="dropdown-item" href="{% url 'delete-invoice' invoice.id %}">Delete</a>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                        {% if not invoices %}
+                        <tr>
+                            <td colspan="4" style="text-align: center"><i class="fas fa-space-shuttle text-error mr-3"></i> nothing to show...</td>
+                        </tr>
+                        {% endif %}
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% include 'pagination.html' with query_set=invoices custom_range=custom_range %}
+        </div>
+    </div>
+    <!-- Footer -->
+    {% include 'footer.html' %}
+    </div>
+</div>
+
+{% endblock content %}

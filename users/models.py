@@ -5,10 +5,13 @@ import uuid
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    username = models.CharField(max_length=128, blank=True, null=True, unique=True)
-    first_name = models.CharField(max_length=128, blank=True, null=True)
-    last_name = models.CharField(max_length=128, blank=True, null=True)
-    email = models.EmailField(max_length=128, blank=True, null=True, unique=True)
+    username = models.CharField(max_length=128, null=True, unique=True)
+    first_name = models.CharField(max_length=128, null=True)
+    last_name = models.CharField(max_length=128, null=True)
+    email = models.EmailField(max_length=128, null=True, unique=True)
+
+    ic = models.CharField(max_length=128, null=True, blank=True)
+    dic = models.CharField(max_length=128, null=True, blank=True)
 
     address = models.CharField(max_length=128, blank=True, null=True)
     city = models.CharField(max_length=64, blank=True, null=True)
@@ -16,7 +19,7 @@ class Profile(models.Model):
     postal_code = models.CharField(max_length=5, blank=True, null=True)
     
     about_me = models.TextField(max_length=256, blank=True, null=True)
-    profile_image = models.ImageField(null=True, blank=True, upload_to='profiles/', default='profiles/user-default.png')
+    profile_image = models.ImageField(blank=True, upload_to='profiles/', default='profiles/user-default.png')
 
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)

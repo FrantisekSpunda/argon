@@ -57,21 +57,16 @@ def registerUser(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
 
-
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
-            print(user)
             user.save()
                        
             messages.success(request, 'User account was created!')
             login(request, user)
             return redirect('profile')
-        
-        else: 
-            messages.error(request, 'An error has occured during registration.')
 
     context = {'form':form}
     return render(request, 'users/register.html', context)

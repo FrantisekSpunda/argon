@@ -43,6 +43,12 @@
                     {{ form.last_name }}
                   </div>
                 </div>
+                  {% for error in form.first_name.errors %}
+                      <p><small class="text-warning">{{ error }}</small></p>
+                  {% endfor %}
+                  {% for error in form.last_name.errors %}
+                      <p><small class="text-warning">{{ error }}</small></p>
+                  {% endfor %}
                 <div class="form-group">
                   <div class="input-group input-group-merge input-group-alternative mb-3">
                     <div class="input-group-prepend">
@@ -51,6 +57,9 @@
                     {{ form.username }}
                   </div>
                 </div>
+                  {% for error in form.username.errors %}
+                      <p><small class="text-warning">{{ error }}</small></p>
+                  {% endfor %}
                 <div class="form-group">
                   <div class="input-group input-group-merge input-group-alternative mb-3">
                     <div class="input-group-prepend">
@@ -59,6 +68,9 @@
                     {{ form.email }}
                   </div>
                 </div>
+                  {% for error in form.email.errors %}
+                      <p><small class="text-warning">{{ error }}</small></p>
+                  {% endfor %}
                 <div class="form-group">
                   <div class="input-group input-group-merge input-group-alternative">
                     <div class="input-group-prepend">
@@ -75,6 +87,12 @@
                     {{ form.password2 }}
                   </div>
                 </div>
+                  {% for error in form.password1.errors %}
+                      <p><small class="text-warning">{{ error }}</small></p>
+                  {% endfor %}
+                  {% for error in form.password2.errors %}
+                      <p><small class="text-warning">{{ error }}</small></p>
+                  {% endfor %}
                 <div class="row my-4">
                   <div class="col-12">
                     <div class="custom-control custom-control-alternative custom-checkbox">
@@ -84,6 +102,8 @@
                       </label>
                     </div>
                   </div>
+                </div>
+                <div>
                 </div>
                 <div class="text-center">
                   <button type="submit" class="btn btn-primary mt-4">Create account</button>
