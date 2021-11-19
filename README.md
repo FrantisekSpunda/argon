@@ -8,6 +8,3 @@ Obsahuje:
 > Automatické odesílání mail
 
 > Zakládání faktur do databáze
-
-
-Vlastně chci mít jen dneska commit tak dělám tohle readme lól.
